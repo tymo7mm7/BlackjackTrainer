@@ -1,3 +1,9 @@
+# Blackjack Trainer
+
+Simple Blackjack game helping you learn how to count cards
+
+Enjoy!
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
