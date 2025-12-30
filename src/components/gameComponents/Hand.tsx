@@ -8,7 +8,9 @@ interface HandProps {
   hideSecondCard?: boolean;
 }
 
-function Hand({ title, cards, score, isDealer = false, hideSecondCard = false }: HandProps) {
+function Hand({ title, cards, 
+  // score,
+  isDealer = false, hideSecondCard = false }: HandProps) {
   return (
     <div className="flex flex-col items-center gap-4">
       {/* Header / Score Badge */}
