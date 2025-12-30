@@ -47,6 +47,7 @@ function App() {
           </Routes>
         </div>
 
+
         {/* Tactic clicker */}
         <div className="absolute top-20 right-100">
           <Clicker />
