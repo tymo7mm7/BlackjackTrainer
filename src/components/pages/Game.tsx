@@ -17,7 +17,7 @@ function Game() {
   const [onPass, setOnPass] = useState<boolean>(false);
   const [gameResult, setGameResult] = useState<string | null>(null);
   const [remainingCards, setRemainingCards] = useState<number>(312);
-  
+
   // Betting State
   const [chips, setChips] = useState<number>(2000);
   const [betAmount, setBetAmount] = useState<number>(0);
@@ -26,13 +26,13 @@ function Game() {
   const handleGameStateChange = (newState: boolean) => {
     setIsGameActive(newState);
     if (newState) {
-       // Deduct bet when game starts
-       setChips(prev => prev - betAmount);
-       localStorage.setItem("chips", (chips - betAmount).toString());
+      // Deduct bet when game starts
+      setChips((prev) => prev - betAmount);
+      localStorage.setItem("chips", (chips - betAmount).toString());
     }
   };
 
-  // if deckId in localStorage -> set deckId 
+  // if deckId in localStorage -> set deckId
   useEffect(() => {
     const deckId = localStorage.getItem("deckId");
     if (deckId) {
@@ -49,8 +49,7 @@ function Game() {
   }, [chips]);
 
   // Handler pobierania decku z api
-  const drawDeck = useCallback(
-    async () => {
+  const drawDeck = useCallback(async () => {
     try {
       const xhr = new XMLHttpRequest();
 
@@ -73,7 +72,6 @@ function Game() {
     }
   }, []);
 
-  
   const resetDeck = useCallback(() => {
     setDeckId("");
     setRemainingCards(0);
@@ -88,7 +86,7 @@ function Game() {
     setBetAmount(0);
   }, []);
 
-// handler pobierania kart przez api
+  // handler pobierania kart przez api
   const drawCards = useCallback(
     async (amount: number) => {
       try {
@@ -103,7 +101,10 @@ function Game() {
         xhr.onload = () => {
           const cards = xhr.response.cards;
           setRemainingCards(xhr.response.remaining);
-          localStorage.setItem("remainingCards", xhr.response.remaining.toString());
+          localStorage.setItem(
+            "remainingCards",
+            xhr.response.remaining.toString()
+          );
           // console.log("drawn cards: ", cards);
           cards.forEach((card: Card) => {
             setOnDrawnCards((prevCards) => [...prevCards, card]);
@@ -191,7 +192,9 @@ function Game() {
       payout = 0;
     } // Dealer Bust
     else if (dealerScore > 21) {
-      result = playerHasBlackjack ? "Blackjack! Player Wins" : "Dealer Bust! Player Wins";
+      result = playerHasBlackjack
+        ? "Blackjack! Player Wins"
+        : "Dealer Bust! Player Wins";
       payout = playerHasBlackjack ? betAmount * 2.5 : betAmount * 2;
     } else if (playerScore > dealerScore) {
       result = playerHasBlackjack ? "Blackjack! Player Wins" : "Player Wins!";
@@ -204,11 +207,11 @@ function Game() {
       result = "Push (Tie)";
       payout = betAmount; // Return bet
     }
-    
+
     // Payout handler
     if (payout > 0) {
-        setChips(prev => prev + payout);
-        localStorage.setItem("chips", (chips + payout).toString());
+      setChips((prev) => prev + payout);
+      localStorage.setItem("chips", (chips + payout).toString());
     }
 
     // Game result handler
@@ -249,19 +252,24 @@ function Game() {
     }
   }, [onPass, dealerScore, isGameActive, gameResult, drawCards, handleGameEnd]);
 
-  useEffect(() => {
-    if (isGameActive) {
-      console.log("Player score: ", playerScore);
-      console.log("Dealer score: ", dealerScore);
-    }
-  }, [isGameActive, playerScore, dealerScore]);
+  // debugger wyniku
+  // useEffect(() => {
+  //   if (isGameActive) {
+  //     console.log("Player score: ", playerScore);
+  //     console.log("Dealer score: ", dealerScore);
+  //   }
+  // }, [isGameActive, playerScore, dealerScore]);
 
   return (
     <div className="flex flex-col gap-4 pb-32">
       <div className="">
         {!deckId && (
           <div className="flex justify-center mt-8">
-            <Button onClick={() => drawDeck()} variant="primary" className="text-xl px-8 py-4">
+            <Button
+              onClick={() => drawDeck()}
+              variant="primary"
+              className="text-xl px-8 py-4"
+            >
               Start New Game
             </Button>
           </div>
@@ -269,45 +277,53 @@ function Game() {
       </div>
       {deckId && (
         <div className="">
-          
           {isGameActive ? (
             <div>
               <div className="flex flex-col gap-12 min-h-[400px] justify-center py-8">
-                 {/* Dealer Hand */}
-                 <Hand 
-                    title="Dealer"
-                    cards={dealerCards}
-                    score={dealerScore}
-                    isDealer={true}
-                    hideSecondCard={isGameActive && !onPass}
-                 />
-                 {/* Player Hand */}
-                 <Hand
-                    title="Player"
-                    cards={playerCards}
-                    score={playerScore}
-                 />
+                {/* Dealer Hand */}
+                <Hand
+                  title="Dealer"
+                  cards={dealerCards}
+                  score={dealerScore}
+                  isDealer={true}
+                  hideSecondCard={isGameActive && !onPass}
+                />
+                {/* Player Hand */}
+                <Hand title="Player" cards={playerCards} score={playerScore} />
               </div>
-            {gameResult && (
-              <div className="absolute top-2/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900/95 p-8 rounded-xl flex flex-col items-center gap-4 z-50 border-2 border-amber-500 shadow-2xl">
-                <h2 className={`text-5xl font-bold mb-4 ${gameResult.includes("Win") ? "text-green-500" : gameResult.includes("Push") ? "text-yellow-500" : "text-red-500"}`}>
-                  {gameResult}
-                </h2>
-                <div className="flex gap-4">
-                     <Button onClick={() => resetGame()} variant="primary" className="text-lg px-6">
-                    Play Again
+              {gameResult && (
+                <div className="absolute top-2/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900/95 p-8 rounded-xl flex flex-col items-center gap-4 z-50 border-2 border-amber-500 shadow-2xl">
+                  <h2
+                    className={`text-5xl font-bold mb-4 ${
+                      gameResult.includes("Win")
+                        ? "text-green-500"
+                        : gameResult.includes("Push")
+                        ? "text-yellow-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {gameResult}
+                  </h2>
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => resetGame()}
+                      variant="primary"
+                      className="text-lg px-6"
+                    >
+                      Play Again
                     </Button>
+                  </div>
                 </div>
-               
-              </div>
-            )}
+              )}
             </div>
           ) : (
-             <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-400">
-                 <h2 className="text-3xl font-light">Place your bet to start dealing</h2>
-             </div>
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-400">
+              <h2 className="text-3xl font-light">
+                Place your bet to start dealing
+              </h2>
+            </div>
           )}
-          
+
           <Footer
             isGameActive={isGameActive}
             GameStateSetter={handleGameStateChange}
@@ -318,7 +334,7 @@ function Game() {
             onPass={playerPass}
             onResetRound={resetGame}
             onResetDeck={resetDeck}
-            onSplit={() => {}} 
+            onSplit={() => {}}
             disableControls={onPass || !!gameResult || playerScore >= 21}
             canSplit={false}
             remainingCards={remainingCards}
